@@ -1,4 +1,0 @@
-# Stage 1 implementation
-# Supports: INIT, PUT, GET (no eviction)
-current_stage: 1
-debug: false

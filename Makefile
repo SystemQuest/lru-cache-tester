@@ -1,4 +1,28 @@
-.PHONY: build test clean release test_stage1 test_starter test_manual
+# ==============================================================================
+# Variables
+# ==============================================================================
+SOLUTION_DEV_ROOT := $(shell pwd)/../lru-cache-solution-dev
+COURSE_ROOT := $(shell pwd)/..
+PWD := $(shell pwd)
+
+# User can override these via environment variables
+# Example: SYSTEMQUEST_REPOSITORY_DIR=/my/impl make test_solution_stage1
+SYSTEMQUEST_REPOSITORY_DIR ?= $(SOLUTION_DEV_ROOT)/python/01-jq3/code
+SYSTEMQUEST_TEST_CASES_JSON ?= $(STAGE1_BASIC)
+
+# Test cases JSON configurations (use = for deferred expansion to avoid # comment issues)
+STAGE1_BASIC = [{"slug":"jq3","tester_log_prefix":"stage-1","title":"Stage \#1: Basic cache operations"}]
+STAGE1_ALL = [{"slug":"jq3","tester_log_prefix":"stage-1.1","title":"Stage \#1.1: Basic cache"},{"slug":"jq3-multiple-keys","tester_log_prefix":"stage-1.2","title":"Stage \#1.2: Multiple keys"},{"slug":"jq3-update","tester_log_prefix":"stage-1.3","title":"Stage \#1.3: Key updates"}]
+STAGE2_BASIC = [{"slug":"ze6","tester_log_prefix":"stage-2","title":"Stage \#2: FIFO eviction"}]
+STAGE2_ALL = [{"slug":"ze6","tester_log_prefix":"stage-2.1","title":"Stage \#2.1: FIFO eviction"},{"slug":"ze6-update","tester_log_prefix":"stage-2.2","title":"Stage \#2.2: Update no reorder"},{"slug":"ze6-size","tester_log_prefix":"stage-2.3","title":"Stage \#2.3: SIZE with eviction"}]
+
+.PHONY: build test clean release all help
+.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_starter test_manual
+.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all
+
+# ==============================================================================
+# Build & Test
+# ==============================================================================
 
 # Build the tester binary to dist/tester (following CodeCrafters pattern)
 build:
@@ -15,48 +39,80 @@ clean:
 	cargo clean
 	rm -rf dist
 
-# Release (placeholder for version tagging)
-release:
-	@echo "Release target not yet implemented"
+# Full workflow: build + test
+all: build test
 
-# Test Stage 1 with stage1 test helper (should pass)
-test_stage1: build
-	SYSTEMQUEST_REPOSITORY_DIR=$(shell pwd)/internal/test_helpers/stages/stage1 \
-	SYSTEMQUEST_TEST_CASES_JSON='[{"slug":"jq3","tester_log_prefix":"stage-1","title":"Stage #1: Basic cache operations"}]' \
-	./dist/tester
-
-# Test Stage 1 with pass_all (should pass all Stage 1 tests)
-test_stage1_all: build
-	SYSTEMQUEST_REPOSITORY_DIR=$(shell pwd)/internal/test_helpers/pass_all \
-	SYSTEMQUEST_TEST_CASES_JSON='[{"slug":"jq3","tester_log_prefix":"stage-1.1","title":"Stage #1.1: Basic cache"},{"slug":"jq3-multiple-keys","tester_log_prefix":"stage-1.2","title":"Stage #1.2: Multiple keys"},{"slug":"jq3-update","tester_log_prefix":"stage-1.3","title":"Stage #1.3: Key updates"}]' \
-	./dist/tester
-
-# Test Stage 2 with stage2 test helper (should pass when implemented)
-test_stage2: build
-	SYSTEMQUEST_REPOSITORY_DIR=$(shell pwd)/internal/test_helpers/stages/stage2 \
-	SYSTEMQUEST_TEST_CASES_JSON='[{"slug":"ze6","tester_log_prefix":"stage-2","title":"Stage #2: FIFO eviction"}]' \
-	./dist/tester
-
-# Test Stage 2 with pass_all (should pass all Stage 2 tests when implemented)
-test_stage2_all: build
-	SYSTEMQUEST_REPOSITORY_DIR=$(shell pwd)/internal/test_helpers/pass_all \
-	SYSTEMQUEST_TEST_CASES_JSON='[{"slug":"ze6","tester_log_prefix":"stage-2.1","title":"Stage #2.1: FIFO eviction"},{"slug":"ze6-update","tester_log_prefix":"stage-2.2","title":"Stage #2.2: Update no reorder"},{"slug":"ze6-size","tester_log_prefix":"stage-2.3","title":"Stage #2.3: SIZE with eviction"}]' \
-	./dist/tester
+# ==============================================================================
+# Test Helpers (internal/test_helpers)
+# ==============================================================================
+# Note: We intentionally do NOT provide test helpers with working implementations.
+# Users must set SYSTEMQUEST_REPOSITORY_DIR to their own implementation.
+# See internal/test_helpers/README.md for details.
 
 # Test with compiled starter (should fail - not implemented yet)
 test_starter: build
-	SYSTEMQUEST_REPOSITORY_DIR=$(shell pwd)/../build-your-own-lru-cache/compiled_starters/python \
-	SYSTEMQUEST_TEST_CASES_JSON='[{"slug":"jq3","tester_log_prefix":"stage-1","title":"Stage #1: Basic cache operations"}]' \
+	SYSTEMQUEST_REPOSITORY_DIR=$(COURSE_ROOT)/build-your-own-lru-cache/compiled_starters/python \
+	SYSTEMQUEST_TEST_CASES_JSON='$(STAGE1_BASIC)' \
 	./dist/tester || true
 
-# Manual test - run solution directly for debugging
-test_manual:
-	@echo "Testing solution manually..."
-	@printf "INIT 10\nPUT name Alice\nGET name\nGET age\nPUT name Bob\nGET name" | \
-		python3 ../build-your-own-lru-cache/solutions/python/01-s1-basic/code/app/main.py
-all: compile build test
+# Test error message when REPOSITORY_DIR not set
+test_error_message: build
+	@echo "Testing error message (should fail with clear message)..."
+	@./dist/tester || true
 
-# 发布新版本
+# Test pass_all placeholder (should fail with error message)
+test_pass_all_error: build
+	@echo "Testing pass_all placeholder (should show error message)..."
+	SYSTEMQUEST_REPOSITORY_DIR=$(PWD)/internal/test_helpers/pass_all \
+	SYSTEMQUEST_TEST_CASES_JSON='$(STAGE1_BASIC)' \
+	./dist/tester || true
+
+# ==============================================================================
+# Solution Dev Testing (lru-cache-solution-dev)
+# ==============================================================================
+# Users can override SYSTEMQUEST_REPOSITORY_DIR and SYSTEMQUEST_TEST_CASES_JSON:
+# Example: SYSTEMQUEST_REPOSITORY_DIR=/my/impl make test_solution_stage1
+
+# Test solution-dev Stage 1
+test_solution_stage1: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/01-jq3/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE1_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Test solution-dev Stage 2
+test_solution_stage2: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/02-ze6/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE2_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Test solution-dev Stage 2 with all test cases
+test_solution_stage2_all: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/02-ze6/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE2_ALL)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Generic test target - fully customizable via environment variables
+test_custom: build
+	@if [ -z "$$SYSTEMQUEST_REPOSITORY_DIR" ]; then \
+		echo "❌ Error: SYSTEMQUEST_REPOSITORY_DIR not set"; \
+		echo "Usage: SYSTEMQUEST_REPOSITORY_DIR=/path/to/impl make test_custom"; \
+		exit 1; \
+	fi; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE1_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$SYSTEMQUEST_REPOSITORY_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# ==============================================================================
+# Release
+# ==============================================================================
+
 current_version_number := $(shell git tag --list "v*" | sort -V | tail -n 1 | cut -c 2-)
 next_version_number := $(shell echo $$(($(current_version_number)+1)))
 
@@ -64,23 +120,35 @@ release:
 	git tag v$(next_version_number)
 	git push origin main v$(next_version_number)
 
-# 帮助信息
+# ==============================================================================
+# Help
+# ==============================================================================
+
 help:
-	@echo "LRU Cache Course - Makefile Commands"
+	@echo "═══════════════════════════════════════════════════════════════"
+	@echo "LRU Cache Tester - Makefile Commands"
+	@echo "═══════════════════════════════════════════════════════════════"
 	@echo ""
 	@echo "Build & Test:"
-	@echo "  make build          - Build the Rust tester"
-	@echo "  make test           - Run cargo tests"
-	@echo "  make test_stage1    - Test Stage 1 (basic cache)"
-	@echo "  make test_stage1_all - Test all Stage 1 test cases"
-	@echo "  make test_stage2    - Test Stage 2 (FIFO eviction)"
-	@echo "  make test_stage2_all - Test all Stage 2 test cases"
-	@echo "  make test_starter   - Test compiled starter (should fail)"
-	@echo "  make test_manual    - Manually test solution with stdin"
+	@echo "  make build                  - Build the Rust tester"
+	@echo "  make test                   - Run cargo unit tests"
+	@echo "  make all                    - Build + test"
+	@echo "  make clean                  - Clean build artifacts"
 	@echo ""
-	@echo "Utilities:"
-	@echo "  make all            - Full workflow: build + test"
-	@echo "  make clean          - Clean build artifacts"
-	@echo "  make release        - Tag and release new version"
-	@echo "  make help           - Show this help message"
+	@echo "Test Error Handling:"
+	@echo "  make test_starter           - Test compiled starter (should fail)"
+	@echo "  make test_error_message     - Test error when REPOSITORY_DIR not set"
+	@echo "  make test_pass_all_error    - Test pass_all placeholder error"
+	@echo ""
+	@echo "Solution Dev Testing (override with SYSTEMQUEST_REPOSITORY_DIR=/path):"
+	@echo "  make test_solution_stage1   - Test solution-dev Stage 1"
+	@echo "  make test_solution_stage2   - Test solution-dev Stage 2 basic"
+	@echo "  make test_solution_stage2_all - Test solution-dev Stage 2 all"
+	@echo "  make test_custom            - Test custom impl (requires REPOSITORY_DIR)"
+	@echo ""
+	@echo "Release:"
+	@echo "  make release                - Tag and push new version"
+	@echo ""
+	@echo "Help:"
+	@echo "  make help                   - Show this message"
 	@echo ""

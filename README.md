@@ -2,17 +2,40 @@
 
 This is the tester for the [Build Your Own LRU Cache](../build-your-own-lru-cache/) challenge on SystemQuest.
 
+## ⚠️ Important: You Must Set SYSTEMQUEST_REPOSITORY_DIR
+
+This tester requires you to provide your own LRU cache implementation. Unlike CodeCrafters' testers (which can test against real Redis, Git, etc.), we don't provide any default implementation.
+
+**You must set the `SYSTEMQUEST_REPOSITORY_DIR` environment variable:**
+
+```bash
+# Set to your implementation directory
+export SYSTEMQUEST_REPOSITORY_DIR=/path/to/your/lru-cache-impl
+
+# Or use inline
+SYSTEMQUEST_REPOSITORY_DIR=. cargo run
+```
+
+If not set, you'll see this error:
+```
+❌ Error: No implementation found in pass_all/
+
+This is intentional. You must set the SYSTEMQUEST_REPOSITORY_DIR environment
+variable to point to your LRU cache implementation directory.
+```
+
 ## Quick Start
 
 ```bash
 # Build the tester
 make build
 
-# Run Stage 1 tests
-make test_stage1
+# Run unit tests
+cargo test
 
-# Run all tests
-make test
+# Test your implementation (set REPOSITORY_DIR first!)
+export SYSTEMQUEST_REPOSITORY_DIR=/path/to/your/impl
+./dist/tester
 
 # Clean build artifacts
 make clean
