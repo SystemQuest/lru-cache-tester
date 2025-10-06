@@ -1,0 +1,40 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+/dist/
+
+# Testing
+*.log
+
+# Python (for test helpers)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.pytest_cache/
+.pipenv/
+
+# Debug files
+debug_echo.py
+debug_test.rs
+test_simple.rs
+test_debug.sh
+examples/debug_test.rs

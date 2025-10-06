@@ -1,0 +1,11 @@
+[package]
+name = "lru-cache-tester"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tester-utils = { path = "../tester-utils-rs" }
+
+[[bin]]
+name = "lru-cache-tester"
+path = "src/bin/main.rs"
