@@ -20,15 +20,17 @@ fn test_stage1_with_pass_all() {
     let repo_dir = get_test_helpers_dir().join("pass_all");
     
     let output = Command::new(&tester)
+        .arg("s1-basic")
+        .arg("s1-multiple-keys")
+        .arg("s1-update")
         .env("SYSTEMQUEST_REPOSITORY_DIR", repo_dir)
-        .env("SYSTEMQUEST_TEST_CASES_JSON", r#"[{"slug":"s1-basic"}]"#)
         .output()
         .expect("Failed to run tester");
     
     assert_eq!(
         output.status.code(),
         Some(0),
-        "Stage 1 test with pass_all should pass.\nStdout: {}\nStderr: {}",
+        "Stage 1 tests with pass_all should pass.\nStdout: {}\nStderr: {}",
         String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
@@ -40,15 +42,19 @@ fn test_stage1_with_stage1_impl() {
     let repo_dir = get_test_helpers_dir().join("stages/stage1");
     
     let output = Command::new(&tester)
+        .arg("s1-basic")
+        .arg("s1-multiple-keys")
+        .arg("s1-update")
         .env("SYSTEMQUEST_REPOSITORY_DIR", repo_dir)
-        .env("SYSTEMQUEST_TEST_CASES_JSON", r#"[{"slug":"s1-basic"}]"#)
         .output()
         .expect("Failed to run tester");
     
     assert_eq!(
         output.status.code(),
         Some(0),
-        "Stage 1 test with stage1 impl should pass"
+        "Stage 1 tests with stage1 impl should pass.\nStdout: {}\nStderr: {}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
     );
 }
 
