@@ -12,17 +12,17 @@ fn main() {
     
     // 添加 Stage 1 测试用例
     definition.add_test_case(TestCase::new(
-        "s1-basic".to_string(),
+        "jq3".to_string(),
         lru_cache_tester::stage_1::test_basic_cache,
     ));
     
     definition.add_test_case(TestCase::new(
-        "s1-multiple-keys".to_string(),
+        "jq3-multiple-keys".to_string(),
         lru_cache_tester::stage_1::test_multiple_keys,
     ));
     
     definition.add_test_case(TestCase::new(
-        "s1-update".to_string(),
+        "jq3-update".to_string(),
         lru_cache_tester::stage_1::test_key_update,
     ));
     

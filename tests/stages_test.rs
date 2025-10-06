@@ -20,9 +20,9 @@ fn test_stage1_with_pass_all() {
     let repo_dir = get_test_helpers_dir().join("pass_all");
     
     let output = Command::new(&tester)
-        .arg("s1-basic")
-        .arg("s1-multiple-keys")
-        .arg("s1-update")
+        .arg("jq3")
+        .arg("jq3-multiple-keys")
+        .arg("jq3-update")
         .env("SYSTEMQUEST_REPOSITORY_DIR", repo_dir)
         .output()
         .expect("Failed to run tester");
@@ -42,9 +42,9 @@ fn test_stage1_with_stage1_impl() {
     let repo_dir = get_test_helpers_dir().join("stages/stage1");
     
     let output = Command::new(&tester)
-        .arg("s1-basic")
-        .arg("s1-multiple-keys")
-        .arg("s1-update")
+        .arg("jq3")
+        .arg("jq3-multiple-keys")
+        .arg("jq3-update")
         .env("SYSTEMQUEST_REPOSITORY_DIR", repo_dir)
         .output()
         .expect("Failed to run tester");
