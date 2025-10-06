@@ -26,6 +26,22 @@ fn main() {
         lru_cache_tester::stage_1::test_key_update,
     ));
     
+    // 添加 Stage 2 测试用例
+    definition.add_test_case(TestCase::new(
+        "ze6".to_string(),
+        lru_cache_tester::stage_2::test_fifo_eviction,
+    ));
+    
+    definition.add_test_case(TestCase::new(
+        "ze6-update".to_string(),
+        lru_cache_tester::stage_2::test_fifo_update_no_reorder,
+    ));
+    
+    definition.add_test_case(TestCase::new(
+        "ze6-size".to_string(),
+        lru_cache_tester::stage_2::test_fifo_size,
+    ));
+    
     // 运行 CLI
     let exit_code = run_cli(env_vars, definition);
     process::exit(exit_code);
