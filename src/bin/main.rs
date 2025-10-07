@@ -1,7 +1,36 @@
 use std::collections::HashMap;
 use std::env;
 use std::process;
-use tester_utils::{run_cli, TestCase, TesterDefinition};
+use tester_utils::{register_tests, run_cli, TesterDefinition};
+
+// 声明式测试注册 - 所有测试在一处集中定义
+register_tests! {
+    stage 0, "Edge Cases & Error Handling" => {
+        "edge-capacity-1" => lru_cache_tester::stage_0::test_capacity_one,
+        "edge-empty-values" => lru_cache_tester::stage_0::test_empty_values,
+        "error-no-init" => lru_cache_tester::stage_0::test_no_init,
+        "error-double-init" => lru_cache_tester::stage_0::test_double_init,
+    },
+    
+    stage 1, "Basic Cache Operations" => {
+        "jq3" => lru_cache_tester::stage_1::test_basic_cache,
+        "jq3-multiple-keys" => lru_cache_tester::stage_1::test_multiple_keys,
+        "jq3-update" => lru_cache_tester::stage_1::test_key_update,
+    },
+    
+    stage 2, "FIFO Eviction" => {
+        "ze6" => lru_cache_tester::stage_2::test_fifo_eviction,
+        "ze6-update" => lru_cache_tester::stage_2::test_fifo_update_no_reorder,
+        "ze6-size" => lru_cache_tester::stage_2::test_fifo_size,
+    },
+    
+    stage 3, "LRU Eviction" => {
+        "ch7" => lru_cache_tester::stage_3::test_lru_eviction,
+        "ch7-vs-fifo" => lru_cache_tester::stage_3::test_lru_vs_fifo,
+        "ch7-multiple" => lru_cache_tester::stage_3::test_lru_multiple_access,
+        "ch7-sequential" => lru_cache_tester::stage_3::test_lru_sequential_evictions,
+    },
+}
 
 fn main() {
     // 获取环境变量
@@ -10,37 +39,8 @@ fn main() {
     // 创建测试定义
     let mut definition = TesterDefinition::new("your_program.sh".to_string());
     
-    // 添加 Stage 1 测试用例
-    definition.add_test_case(TestCase::new(
-        "jq3".to_string(),
-        lru_cache_tester::stage_1::test_basic_cache,
-    ));
-    
-    definition.add_test_case(TestCase::new(
-        "jq3-multiple-keys".to_string(),
-        lru_cache_tester::stage_1::test_multiple_keys,
-    ));
-    
-    definition.add_test_case(TestCase::new(
-        "jq3-update".to_string(),
-        lru_cache_tester::stage_1::test_key_update,
-    ));
-    
-    // 添加 Stage 2 测试用例
-    definition.add_test_case(TestCase::new(
-        "ze6".to_string(),
-        lru_cache_tester::stage_2::test_fifo_eviction,
-    ));
-    
-    definition.add_test_case(TestCase::new(
-        "ze6-update".to_string(),
-        lru_cache_tester::stage_2::test_fifo_update_no_reorder,
-    ));
-    
-    definition.add_test_case(TestCase::new(
-        "ze6-size".to_string(),
-        lru_cache_tester::stage_2::test_fifo_size,
-    ));
+    // 使用生成的函数注册所有测试
+    register_all_tests(&mut definition);
     
     // 运行 CLI
     let exit_code = run_cli(env_vars, definition);

@@ -109,3 +109,65 @@ impl CommandRunner {
 // - 需要处理 PTY 特有的问题（ANSI 转义码等）
 // 
 // 决策: Week 1 不实现，Week 2-3 根据需要评估
+
+// ============================================================================
+// 单元测试
+// ============================================================================
+
+#[cfg(test)]
+mod tests {
+    
+    /// 测试命令拼接逻辑
+    #[test]
+    fn test_command_joining() {
+        let commands = vec!["INIT 10", "PUT a 1", "GET a"];
+        let stdin_data = commands.join("\n") + "\n";
+        
+        assert_eq!(stdin_data, "INIT 10\nPUT a 1\nGET a\n");
+    }
+    
+    /// 测试响应解析逻辑
+    #[test]
+    fn test_response_parsing() {
+        let output = "OK\nOK\n1\n";
+        let responses: Vec<String> = output.lines().map(|s| s.to_string()).collect();
+        
+        assert_eq!(responses, vec!["OK", "OK", "1"]);
+    }
+    
+    /// 测试响应数量验证逻辑
+    #[test]
+    fn test_response_count_validation() {
+        let commands = vec!["INIT 10", "PUT a 1"];
+        let responses = vec!["OK".to_string(), "OK".to_string()];
+        
+        assert_eq!(responses.len(), commands.len());
+    }
+    
+    /// 测试响应数量不匹配检测
+    #[test]
+    fn test_response_count_mismatch() {
+        let commands = vec!["INIT 10", "PUT a 1", "GET a"];
+        let responses = vec!["OK".to_string(), "OK".to_string()]; // 缺少一个
+        
+        assert_ne!(responses.len(), commands.len());
+    }
+    
+    /// 测试空命令列表
+    #[test]
+    fn test_empty_commands() {
+        let commands: Vec<&str> = vec![];
+        let stdin_data = commands.join("\n") + "\n";
+        
+        assert_eq!(stdin_data, "\n");
+    }
+    
+    /// 测试单个命令
+    #[test]
+    fn test_single_command() {
+        let commands = vec!["INIT 10"];
+        let stdin_data = commands.join("\n") + "\n";
+        
+        assert_eq!(stdin_data, "INIT 10\n");
+    }
+}

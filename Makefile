@@ -15,10 +15,12 @@ STAGE1_BASIC = [{"slug":"jq3","tester_log_prefix":"stage-1","title":"Stage \#1: 
 STAGE1_ALL = [{"slug":"jq3","tester_log_prefix":"stage-1.1","title":"Stage \#1.1: Basic cache"},{"slug":"jq3-multiple-keys","tester_log_prefix":"stage-1.2","title":"Stage \#1.2: Multiple keys"},{"slug":"jq3-update","tester_log_prefix":"stage-1.3","title":"Stage \#1.3: Key updates"}]
 STAGE2_BASIC = [{"slug":"ze6","tester_log_prefix":"stage-2","title":"Stage \#2: FIFO eviction"}]
 STAGE2_ALL = [{"slug":"ze6","tester_log_prefix":"stage-2.1","title":"Stage \#2.1: FIFO eviction"},{"slug":"ze6-update","tester_log_prefix":"stage-2.2","title":"Stage \#2.2: Update no reorder"},{"slug":"ze6-size","tester_log_prefix":"stage-2.3","title":"Stage \#2.3: SIZE with eviction"}]
+STAGE3_BASIC = [{"slug":"ch7","tester_log_prefix":"stage-3","title":"Stage \#3: LRU eviction"}]
+STAGE3_ALL = [{"slug":"ch7","tester_log_prefix":"stage-3.1","title":"Stage \#3.1: LRU eviction"},{"slug":"ch7-vs-fifo","tester_log_prefix":"stage-3.2","title":"Stage \#3.2: LRU vs FIFO"},{"slug":"ch7-multiple","tester_log_prefix":"stage-3.3","title":"Stage \#3.3: Multiple access"},{"slug":"ch7-sequential","tester_log_prefix":"stage-3.4","title":"Stage \#3.4: Sequential evictions"}]
 
 .PHONY: build test clean release all help
-.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_starter test_manual
-.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all
+.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_stage3 test_stage3_all test_starter test_manual
+.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all
 
 # ==============================================================================
 # Build & Test
@@ -97,6 +99,22 @@ test_solution_stage2_all: build
 	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
 	./dist/tester
 
+# Test solution-dev Stage 3
+test_solution_stage3: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/03-ch7/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE3_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Test solution-dev Stage 3 with all test cases
+test_solution_stage3_all: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/03-ch7/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE3_ALL)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
 # Generic test target - fully customizable via environment variables
 test_custom: build
 	@if [ -z "$$SYSTEMQUEST_REPOSITORY_DIR" ]; then \
@@ -144,6 +162,8 @@ help:
 	@echo "  make test_solution_stage1   - Test solution-dev Stage 1"
 	@echo "  make test_solution_stage2   - Test solution-dev Stage 2 basic"
 	@echo "  make test_solution_stage2_all - Test solution-dev Stage 2 all"
+	@echo "  make test_solution_stage3   - Test solution-dev Stage 3 basic"
+	@echo "  make test_solution_stage3_all - Test solution-dev Stage 3 all"
 	@echo "  make test_custom            - Test custom impl (requires REPOSITORY_DIR)"
 	@echo ""
 	@echo "Release:"
