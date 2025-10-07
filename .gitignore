@@ -31,6 +31,8 @@ __pycache__/
 *.so
 .pytest_cache/
 .pipenv/
+Pipfile
+Pipfile.lock
 
 # Debug files
 debug_echo.py
