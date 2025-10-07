@@ -1,4 +1,5 @@
 use tester_utils::{TestCaseHarness, TesterError};
+use crate::test_case::CacheTestCase;
 use crate::helpers::CommandRunner;
 
 /// Stage 2: FIFO Eviction
@@ -16,40 +17,21 @@ use crate::helpers::CommandRunner;
 /// 3. First item 'a' should be evicted
 /// 4. Items 'b' and 'c' should remain
 pub fn test_fifo_eviction(harness: &mut TestCaseHarness) -> Result<(), TesterError> {
-    harness.logger.infof("Testing FIFO eviction", &[]);
-    
-    let mut runner = CommandRunner::new(harness.executable.clone_executable());
-    
-    harness.logger.debugf("Step 1: Initialize cache with capacity 2", &[]);
-    
-    let responses = runner.send_commands(&[
-        "INIT 2",
-        "PUT a 1",
-        "PUT b 2",
-        "PUT c 3",  // This should evict 'a' (oldest)
-        "GET a",    // Should return NULL (evicted)
-        "GET b",    // Should return 2
-        "GET c",    // Should return 3
-    ])?;
-    
-    // Verify responses
-    let expected = vec!["OK", "OK", "OK", "OK", "NULL", "2", "3"];
-    
-    for (i, (actual, expected)) in responses.iter().zip(expected.iter()).enumerate() {
-        if actual != expected {
-            return Err(TesterError::User(format!(
-                "Command {} failed: expected '{}', got '{}'\nHint: In FIFO, the oldest item should be evicted first",
-                i + 1, expected, actual
-            ).into()));
-        }
-        harness.logger.debugf(&format!("✓ Command {}: {}", i + 1, actual), &[]);
-    }
-    
-    harness.logger.successf("✓ FIFO eviction working correctly", &[]);
-    harness.logger.debugf("  - Oldest item 'a' was evicted", &[]);
-    harness.logger.debugf("  - Recent items 'b' and 'c' retained", &[]);
-    
-    Ok(())
+    CacheTestCase::new(
+        "Testing FIFO eviction",
+        vec![
+            "INIT 2",
+            "PUT a 1",
+            "PUT b 2",
+            "PUT c 3",  // This should evict 'a' (oldest)
+            "GET a",    // Should return NULL (evicted)
+            "GET b",    // Should return 2
+            "GET c",    // Should return 3
+        ],
+        vec!["OK", "OK", "OK", "OK", "NULL", "2", "3"],
+    )
+    .with_hint("In FIFO, the oldest item should be evicted first. When cache is full, adding 'c' should evict 'a' (the first inserted item).")
+    .run(harness)
 }
 
 /// Test that updating a key doesn't change eviction order (FIFO property)

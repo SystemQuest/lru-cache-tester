@@ -27,7 +27,10 @@ impl CommandRunner {
     /// 这是 Week 1 的核心方法，适用于所有 Stage 1-4 测试
     /// 
     /// # 示例
-    /// ```rust
+    /// ```rust,no_run
+    /// # use lru_cache_tester::helpers::CommandRunner;
+    /// # use tester_utils::Executable;
+    /// # fn example(executable: Executable) -> Result<(), Box<dyn std::error::Error>> {
     /// let mut runner = CommandRunner::new(executable);
     /// let responses = runner.send_commands(&[
     ///     "INIT 10",
@@ -35,6 +38,8 @@ impl CommandRunner {
     ///     "GET name",
     /// ])?;
     /// assert_eq!(responses, vec!["OK", "OK", "Alice"]);
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn send_commands(&mut self, commands: &[&str]) -> Result<Vec<String>, TesterError> {
         // 使用 run_with_stdin 一次性发送所有命令

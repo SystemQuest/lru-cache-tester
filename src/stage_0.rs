@@ -1,5 +1,6 @@
 use tester_utils::{TestCaseHarness, TesterError};
 use crate::helpers::CommandRunner;
+use crate::test_case::CacheTestCase;
 
 /// Stage 0: Edge Cases and Error Handling
 /// 
@@ -10,33 +11,13 @@ use crate::helpers::CommandRunner;
 
 /// 测试容量为 1 的边界情况
 pub fn test_capacity_one(harness: &mut TestCaseHarness) -> Result<(), TesterError> {
-    harness.logger.infof("Testing edge case: capacity = 1", &[]);
-    
-    let mut runner = CommandRunner::new(harness.executable.clone_executable());
-    
-    let responses = runner.send_commands(&[
-        "INIT 1",
-        "PUT a 1",
-        "GET a",
-        "PUT b 2",     // 应该淘汰 'a'
-        "GET a",       // NULL
-        "GET b",       // 2
-    ])?;
-    
-    let expected = vec!["OK", "OK", "1", "OK", "NULL", "2"];
-    
-    for (i, (actual, expected)) in responses.iter().zip(expected.iter()).enumerate() {
-        if actual != expected {
-            return Err(TesterError::User(format!(
-                "Command {} failed: expected '{}', got '{}'\n\
-                Hint: With capacity=1, inserting a new key should immediately evict the existing key.",
-                i + 1, expected, actual
-            ).into()));
-        }
-    }
-    
-    harness.logger.successf("✓ Capacity = 1 edge case passed", &[]);
-    Ok(())
+    CacheTestCase::new(
+        "Testing edge case: capacity = 1",
+        vec!["INIT 1", "PUT a 1", "GET a", "PUT b 2", "GET a", "GET b"],
+        vec!["OK", "OK", "1", "OK", "NULL", "2"],
+    )
+    .with_hint("With capacity=1, inserting a new key should immediately evict the existing key.")
+    .run(harness)
 }
 
 /// 测试空值处理
