@@ -53,6 +53,18 @@ register_tests! {
         "ba6-capacity-one" => lru_cache_tester::stage_5::test_concurrent_capacity_one,
         "ba6-after-concurrent" => lru_cache_tester::stage_5::test_operations_after_concurrent,
     },
+    
+    stage 6, "TTL Expiration" => {
+        "xy7" => lru_cache_tester::stage_6::test_ttl_basic,
+        "xy7-immediate" => lru_cache_tester::stage_6::test_ttl_immediate_access,
+        "xy7-multiple" => lru_cache_tester::stage_6::test_ttl_multiple_different,
+        "xy7-eviction" => lru_cache_tester::stage_6::test_ttl_with_eviction,
+        "xy7-no-expiration" => lru_cache_tester::stage_6::test_ttl_no_expiration,
+        "xy7-mixed" => lru_cache_tester::stage_6::test_ttl_mixed,
+        "xy7-update" => lru_cache_tester::stage_6::test_ttl_update,
+        "xy7-size" => lru_cache_tester::stage_6::test_ttl_size_consistency,
+        "xy7-concurrent" => lru_cache_tester::stage_6::test_ttl_concurrent,
+    },
 }
 
 fn main() {

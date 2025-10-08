@@ -21,10 +21,12 @@ STAGE4_BASIC = [{"slug":"vh5","tester_log_prefix":"stage-4","title":"Stage \#4: 
 STAGE4_ALL = [{"slug":"vh5","tester_log_prefix":"stage-4.1","title":"Stage \#4.1: LRU eviction"},{"slug":"vh5-vs-fifo","tester_log_prefix":"stage-4.2","title":"Stage \#4.2: LRU vs FIFO"},{"slug":"vh5-multiple","tester_log_prefix":"stage-4.3","title":"Stage \#4.3: Multiple access"},{"slug":"vh5-sequential","tester_log_prefix":"stage-4.4","title":"Stage \#4.4: Sequential evictions"},{"slug":"vh5-capacity-one","tester_log_prefix":"stage-4.5","title":"Stage \#4.5: Capacity one"},{"slug":"vh5-empty-cache","tester_log_prefix":"stage-4.6","title":"Stage \#4.6: Empty cache"},{"slug":"vh5-repeated-ops","tester_log_prefix":"stage-4.7","title":"Stage \#4.7: Repeated ops"},{"slug":"vh5-eviction-cycle","tester_log_prefix":"stage-4.8","title":"Stage \#4.8: Eviction cycle"}]
 STAGE5_BASIC = [{"slug":"ba6","tester_log_prefix":"stage-5","title":"Stage \#5: Thread safety"}]
 STAGE5_ALL = [{"slug":"ba6","tester_log_prefix":"stage-5.1","title":"Stage \#5.1: Thread-safe basic"},{"slug":"ba6-read-heavy","tester_log_prefix":"stage-5.2","title":"Stage \#5.2: READ_HEAVY"},{"slug":"ba6-write-heavy","tester_log_prefix":"stage-5.3","title":"Stage \#5.3: WRITE_HEAVY"},{"slug":"ba6-stress","tester_log_prefix":"stage-5.4","title":"Stage \#5.4: Stress test"},{"slug":"ba6-sequential","tester_log_prefix":"stage-5.5","title":"Stage \#5.5: Sequential concurrent"},{"slug":"ba6-lru-preserved","tester_log_prefix":"stage-5.6","title":"Stage \#5.6: LRU preserved"},{"slug":"ba6-size-consistency","tester_log_prefix":"stage-5.7","title":"Stage \#5.7: SIZE consistency"},{"slug":"ba6-capacity-one","tester_log_prefix":"stage-5.8","title":"Stage \#5.8: Capacity one"},{"slug":"ba6-after-concurrent","tester_log_prefix":"stage-5.9","title":"Stage \#5.9: After concurrent"}]
+STAGE6_BASIC = [{"slug":"xy7","tester_log_prefix":"stage-6","title":"Stage \#6: TTL expiration"}]
+STAGE6_ALL = [{"slug":"xy7","tester_log_prefix":"stage-6.1","title":"Stage \#6.1: TTL basic"},{"slug":"xy7-immediate","tester_log_prefix":"stage-6.2","title":"Stage \#6.2: Immediate access"},{"slug":"xy7-multiple","tester_log_prefix":"stage-6.3","title":"Stage \#6.3: Multiple TTLs"},{"slug":"xy7-eviction","tester_log_prefix":"stage-6.4","title":"Stage \#6.4: TTL with eviction"},{"slug":"xy7-no-expiration","tester_log_prefix":"stage-6.5","title":"Stage \#6.5: No expiration"},{"slug":"xy7-mixed","tester_log_prefix":"stage-6.6","title":"Stage \#6.6: Mixed entries"},{"slug":"xy7-update","tester_log_prefix":"stage-6.7","title":"Stage \#6.7: TTL update"},{"slug":"xy7-size","tester_log_prefix":"stage-6.8","title":"Stage \#6.8: SIZE consistency"},{"slug":"xy7-concurrent","tester_log_prefix":"stage-6.9","title":"Stage \#6.9: TTL concurrent"}]
 
 .PHONY: build test clean release all help
-.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_stage3 test_stage3_all test_stage4 test_stage4_all test_stage5 test_stage5_all test_starter test_manual
-.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all test_solution_stage4 test_solution_stage4_all test_solution_stage5 test_solution_stage5_all
+.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_stage3 test_stage3_all test_stage4 test_stage4_all test_stage5 test_stage5_all test_stage6 test_stage6_all test_starter test_manual
+.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all test_solution_stage4 test_solution_stage4_all test_solution_stage5 test_solution_stage5_all test_solution_stage6 test_solution_stage6_all
 
 # ==============================================================================
 # Build & Test
@@ -151,6 +153,22 @@ test_solution_stage5_all: build
 	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
 	./dist/tester
 
+# Test solution-dev Stage 6
+test_solution_stage6: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/06-xy7/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE6_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Test solution-dev Stage 6 with all test cases
+test_solution_stage6_all: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/06-xy7/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE6_ALL)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
 # Generic test target - fully customizable via environment variables
 test_custom: build
 	@if [ -z "$$SYSTEMQUEST_REPOSITORY_DIR" ]; then \
@@ -204,6 +222,8 @@ help:
 	@echo "  make test_solution_stage4_all - Test solution-dev Stage 4 all"
 	@echo "  make test_solution_stage5   - Test solution-dev Stage 5 basic"
 	@echo "  make test_solution_stage5_all - Test solution-dev Stage 5 all"
+	@echo "  make test_solution_stage6   - Test solution-dev Stage 6 basic"
+	@echo "  make test_solution_stage6_all - Test solution-dev Stage 6 all"
 	@echo "  make test_custom            - Test custom impl (requires REPOSITORY_DIR)"
 	@echo ""
 	@echo "Release:"
