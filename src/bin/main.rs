@@ -30,6 +30,17 @@ register_tests! {
         "ch7-multiple" => lru_cache_tester::stage_3::test_lru_multiple_access,
         "ch7-sequential" => lru_cache_tester::stage_3::test_lru_sequential_evictions,
     },
+    
+    stage 4, "Custom Doubly Linked List" => {
+        "vh5" => lru_cache_tester::stage_4::test_lru_eviction,
+        "vh5-vs-fifo" => lru_cache_tester::stage_4::test_lru_vs_fifo,
+        "vh5-multiple" => lru_cache_tester::stage_4::test_lru_multiple_access,
+        "vh5-sequential" => lru_cache_tester::stage_4::test_lru_sequential_evictions,
+        "vh5-capacity-one" => lru_cache_tester::stage_4::test_capacity_one,
+        "vh5-empty-cache" => lru_cache_tester::stage_4::test_empty_cache,
+        "vh5-repeated-ops" => lru_cache_tester::stage_4::test_repeated_operations,
+        "vh5-eviction-cycle" => lru_cache_tester::stage_4::test_full_eviction_cycle,
+    },
 }
 
 fn main() {
