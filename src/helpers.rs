@@ -73,6 +73,14 @@ impl CommandRunner {
         
         Ok(responses)
     }
+    
+    /// 发送单条命令并返回响应（便捷方法）
+    /// 
+    /// 内部仍使用批量模式，但只发送一条命令
+    pub fn send_command(&mut self, command: &str) -> Result<String, TesterError> {
+        let responses = self.send_commands(&[command])?;
+        Ok(responses[0].clone())
+    }
 }
 
 // ============================================================================

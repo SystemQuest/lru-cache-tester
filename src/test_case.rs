@@ -31,6 +31,9 @@ pub struct CacheTestCase {
     /// 是否显示详细的命令执行日志（默认 false）
     /// 注意: 启用 verbose 会禁用 Assertion 的友好输出
     pub verbose: bool,
+    
+    /// 是否使用正则表达式匹配响应（用于并发测试等不确定输出）
+    pub regex_match: bool,
 }
 
 impl CacheTestCase {
@@ -46,6 +49,7 @@ impl CacheTestCase {
             expected_responses,
             hint: None,
             verbose: false,
+            regex_match: false,
         }
     }
     
@@ -58,6 +62,12 @@ impl CacheTestCase {
     /// 启用详细日志（显示每个命令的执行结果）
     pub fn with_verbose(mut self) -> Self {
         self.verbose = true;
+        self
+    }
+    
+    /// 启用正则表达式匹配（用于并发测试等输出不确定的场景）
+    pub fn with_regex_match(mut self, enabled: bool) -> Self {
+        self.regex_match = enabled;
         self
     }
     
@@ -86,7 +96,42 @@ impl CacheTestCase {
         let responses = runner.send_commands(&self.commands)?;
         
         // 4. 使用 Assertion 验证响应
-        if self.verbose {
+        if self.regex_match {
+            // Regex 模式: 使用正则表达式匹配（用于并发测试等输出不确定的场景）
+            use regex::Regex;
+            
+            for (i, (actual, expected_pattern)) in responses.iter().zip(self.expected_responses.iter()).enumerate() {
+                let re = Regex::new(expected_pattern).map_err(|e| {
+                    TesterError::Configuration(format!(
+                        "Invalid regex pattern '{}': {}",
+                        expected_pattern, e
+                    ))
+                })?;
+                
+                if !re.is_match(actual) {
+                    let mut error_msg = format!(
+                        "Command {} failed: response '{}' does not match pattern '{}'\n\
+                        Command: {}",
+                        i + 1, actual, expected_pattern, self.commands[i]
+                    );
+                    
+                    if let Some(hint) = self.hint {
+                        error_msg.push_str(&format!("\n\nHint: {}", hint));
+                    }
+                    
+                    return Err(TesterError::User(error_msg.into()));
+                }
+                
+                harness.logger.debugf(&format!(
+                    "✓ Command {}: {} → {} (matched pattern)",
+                    i + 1,
+                    self.commands[i],
+                    actual
+                ), &[]);
+            }
+            
+            harness.logger.successf(&format!("✓ {}", self.description), &[]);
+        } else if self.verbose {
             // Verbose 模式: 使用旧的验证逻辑（保留向后兼容）
             for (i, (actual, expected)) in responses.iter().zip(self.expected_responses.iter()).enumerate() {
                 if actual != expected {
@@ -202,6 +247,7 @@ impl CacheTestCaseBuilder {
             expected_responses: self.expected_responses.expect("expected_responses are required"),
             hint: self.hint,
             verbose: self.verbose,
+            regex_match: false,
         }
     }
 }

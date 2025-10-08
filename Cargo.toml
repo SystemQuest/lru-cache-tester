@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 tester-utils = { path = "../tester-utils-rs" }
+regex = "1.10"
 
 [[bin]]
 name = "lru-cache-tester"

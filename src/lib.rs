@@ -9,3 +9,4 @@ pub mod stage_3;
 pub mod stage_4;
 pub mod stage_5;
 pub mod stage_6;
+pub mod stage_7;

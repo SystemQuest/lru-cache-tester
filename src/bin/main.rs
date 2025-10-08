@@ -65,6 +65,20 @@ register_tests! {
         "xy7-size" => lru_cache_tester::stage_6::test_ttl_size_consistency,
         "xy7-concurrent" => lru_cache_tester::stage_6::test_ttl_concurrent,
     },
+    
+    stage 7, "Cache Statistics (Extension)" => {
+        "st8" => lru_cache_tester::stage_7::test_stats_basic_hit_miss,
+        "st8-empty" => lru_cache_tester::stage_7::test_stats_empty_cache,
+        "st8-hits-only" => lru_cache_tester::stage_7::test_stats_all_hits,
+        "st8-misses-only" => lru_cache_tester::stage_7::test_stats_all_misses,
+        "st8-eviction" => lru_cache_tester::stage_7::test_stats_eviction_tracking,
+        "st8-eviction-cycle" => lru_cache_tester::stage_7::test_stats_eviction_cycle,
+        "st8-expiration" => lru_cache_tester::stage_7::test_stats_expiration_tracking,
+        "st8-mixed" => lru_cache_tester::stage_7::test_stats_mixed_expiration_eviction,
+        "st8-precision" => lru_cache_tester::stage_7::test_stats_hit_rate_precision,
+        "st8-large" => lru_cache_tester::stage_7::test_stats_large_workload,
+        "st8-concurrent" => lru_cache_tester::stage_7::test_stats_concurrent,
+    },
 }
 
 fn main() {
