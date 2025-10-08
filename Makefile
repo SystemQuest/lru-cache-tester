@@ -19,10 +19,12 @@ STAGE3_BASIC = [{"slug":"ch7","tester_log_prefix":"stage-3","title":"Stage \#3: 
 STAGE3_ALL = [{"slug":"ch7","tester_log_prefix":"stage-3.1","title":"Stage \#3.1: LRU eviction"},{"slug":"ch7-vs-fifo","tester_log_prefix":"stage-3.2","title":"Stage \#3.2: LRU vs FIFO"},{"slug":"ch7-multiple","tester_log_prefix":"stage-3.3","title":"Stage \#3.3: Multiple access"},{"slug":"ch7-sequential","tester_log_prefix":"stage-3.4","title":"Stage \#3.4: Sequential evictions"}]
 STAGE4_BASIC = [{"slug":"vh5","tester_log_prefix":"stage-4","title":"Stage \#4: Custom DLL"}]
 STAGE4_ALL = [{"slug":"vh5","tester_log_prefix":"stage-4.1","title":"Stage \#4.1: LRU eviction"},{"slug":"vh5-vs-fifo","tester_log_prefix":"stage-4.2","title":"Stage \#4.2: LRU vs FIFO"},{"slug":"vh5-multiple","tester_log_prefix":"stage-4.3","title":"Stage \#4.3: Multiple access"},{"slug":"vh5-sequential","tester_log_prefix":"stage-4.4","title":"Stage \#4.4: Sequential evictions"},{"slug":"vh5-capacity-one","tester_log_prefix":"stage-4.5","title":"Stage \#4.5: Capacity one"},{"slug":"vh5-empty-cache","tester_log_prefix":"stage-4.6","title":"Stage \#4.6: Empty cache"},{"slug":"vh5-repeated-ops","tester_log_prefix":"stage-4.7","title":"Stage \#4.7: Repeated ops"},{"slug":"vh5-eviction-cycle","tester_log_prefix":"stage-4.8","title":"Stage \#4.8: Eviction cycle"}]
+STAGE5_BASIC = [{"slug":"ba6","tester_log_prefix":"stage-5","title":"Stage \#5: Thread safety"}]
+STAGE5_ALL = [{"slug":"ba6","tester_log_prefix":"stage-5.1","title":"Stage \#5.1: Thread-safe basic"},{"slug":"ba6-read-heavy","tester_log_prefix":"stage-5.2","title":"Stage \#5.2: READ_HEAVY"},{"slug":"ba6-write-heavy","tester_log_prefix":"stage-5.3","title":"Stage \#5.3: WRITE_HEAVY"},{"slug":"ba6-stress","tester_log_prefix":"stage-5.4","title":"Stage \#5.4: Stress test"},{"slug":"ba6-sequential","tester_log_prefix":"stage-5.5","title":"Stage \#5.5: Sequential concurrent"},{"slug":"ba6-lru-preserved","tester_log_prefix":"stage-5.6","title":"Stage \#5.6: LRU preserved"},{"slug":"ba6-size-consistency","tester_log_prefix":"stage-5.7","title":"Stage \#5.7: SIZE consistency"},{"slug":"ba6-capacity-one","tester_log_prefix":"stage-5.8","title":"Stage \#5.8: Capacity one"},{"slug":"ba6-after-concurrent","tester_log_prefix":"stage-5.9","title":"Stage \#5.9: After concurrent"}]
 
 .PHONY: build test clean release all help
-.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_stage3 test_stage3_all test_stage4 test_stage4_all test_starter test_manual
-.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all test_solution_stage4 test_solution_stage4_all
+.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_stage3 test_stage3_all test_stage4 test_stage4_all test_stage5 test_stage5_all test_starter test_manual
+.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all test_solution_stage4 test_solution_stage4_all test_solution_stage5 test_solution_stage5_all
 
 # ==============================================================================
 # Build & Test
@@ -133,6 +135,22 @@ test_solution_stage4_all: build
 	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
 	./dist/tester
 
+# Test solution-dev Stage 5
+test_solution_stage5: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/05-ba6/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE5_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Test solution-dev Stage 5 with all test cases
+test_solution_stage5_all: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/05-ba6/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE5_ALL)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
 # Generic test target - fully customizable via environment variables
 test_custom: build
 	@if [ -z "$$SYSTEMQUEST_REPOSITORY_DIR" ]; then \
@@ -184,6 +202,8 @@ help:
 	@echo "  make test_solution_stage3_all - Test solution-dev Stage 3 all"
 	@echo "  make test_solution_stage4   - Test solution-dev Stage 4 basic"
 	@echo "  make test_solution_stage4_all - Test solution-dev Stage 4 all"
+	@echo "  make test_solution_stage5   - Test solution-dev Stage 5 basic"
+	@echo "  make test_solution_stage5_all - Test solution-dev Stage 5 all"
 	@echo "  make test_custom            - Test custom impl (requires REPOSITORY_DIR)"
 	@echo ""
 	@echo "Release:"

@@ -41,6 +41,18 @@ register_tests! {
         "vh5-repeated-ops" => lru_cache_tester::stage_4::test_repeated_operations,
         "vh5-eviction-cycle" => lru_cache_tester::stage_4::test_full_eviction_cycle,
     },
+    
+    stage 5, "Thread Safety" => {
+        "ba6" => lru_cache_tester::stage_5::test_thread_safe_basic,
+        "ba6-read-heavy" => lru_cache_tester::stage_5::test_concurrent_read_heavy,
+        "ba6-write-heavy" => lru_cache_tester::stage_5::test_concurrent_write_heavy,
+        "ba6-stress" => lru_cache_tester::stage_5::test_concurrent_stress,
+        "ba6-sequential" => lru_cache_tester::stage_5::test_concurrent_sequential,
+        "ba6-lru-preserved" => lru_cache_tester::stage_5::test_concurrent_lru_preserved,
+        "ba6-size-consistency" => lru_cache_tester::stage_5::test_size_consistency,
+        "ba6-capacity-one" => lru_cache_tester::stage_5::test_concurrent_capacity_one,
+        "ba6-after-concurrent" => lru_cache_tester::stage_5::test_operations_after_concurrent,
+    },
 }
 
 fn main() {
