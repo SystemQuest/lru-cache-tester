@@ -67,3 +67,28 @@ pub fn test_key_update(harness: &mut TestCaseHarness) -> Result<(), TesterError>
     .with_hint("Updating an existing key should replace its value.")
     .run(harness)
 }
+
+/// Stage 1: SIZE Command Test
+/// 
+/// 测试 SIZE 命令，验证缓存正确跟踪条目数量
+pub fn test_size_command(harness: &mut TestCaseHarness) -> Result<(), TesterError> {
+    CacheTestCase::new(
+        "Testing SIZE command",
+        vec![
+            "INIT 10",
+            "SIZE",              // 初始为空
+            "PUT key1 value1",
+            "SIZE",              // 应该是 1
+            "PUT key2 value2",
+            "PUT key3 value3",
+            "SIZE",              // 应该是 3
+            "PUT key1 updated",  // 更新不增加数量
+            "SIZE",              // 仍然是 3
+            "GET key2",
+            "SIZE",              // GET 不改变数量，仍然是 3
+        ],
+        vec!["OK", "0", "OK", "1", "OK", "OK", "3", "OK", "3", "value2", "3"],
+    )
+    .with_hint("SIZE should return the current number of items in cache. Updates don't change size, only new keys do.")
+    .run(harness)
+}

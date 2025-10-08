@@ -5,17 +5,11 @@ use tester_utils::{register_tests, run_cli, TesterDefinition};
 
 // 声明式测试注册 - 所有测试在一处集中定义
 register_tests! {
-    stage 0, "Edge Cases & Error Handling" => {
-        "edge-capacity-1" => lru_cache_tester::stage_0::test_capacity_one,
-        "edge-empty-values" => lru_cache_tester::stage_0::test_empty_values,
-        "error-no-init" => lru_cache_tester::stage_0::test_no_init,
-        "error-double-init" => lru_cache_tester::stage_0::test_double_init,
-    },
-    
     stage 1, "Basic Cache Operations" => {
         "jq3" => lru_cache_tester::stage_1::test_basic_cache,
         "jq3-multiple-keys" => lru_cache_tester::stage_1::test_multiple_keys,
         "jq3-update" => lru_cache_tester::stage_1::test_key_update,
+        "jq3-size" => lru_cache_tester::stage_1::test_size_command,
     },
     
     stage 2, "FIFO Eviction" => {

@@ -12,7 +12,7 @@ SYSTEMQUEST_TEST_CASES_JSON ?= $(STAGE1_BASIC)
 
 # Test cases JSON configurations (use = for deferred expansion to avoid # comment issues)
 STAGE1_BASIC = [{"slug":"jq3","tester_log_prefix":"stage-1","title":"Stage \#1: Basic cache operations"}]
-STAGE1_ALL = [{"slug":"jq3","tester_log_prefix":"stage-1.1","title":"Stage \#1.1: Basic cache"},{"slug":"jq3-multiple-keys","tester_log_prefix":"stage-1.2","title":"Stage \#1.2: Multiple keys"},{"slug":"jq3-update","tester_log_prefix":"stage-1.3","title":"Stage \#1.3: Key updates"}]
+STAGE1_ALL = [{"slug":"jq3","tester_log_prefix":"stage-1.1","title":"Stage \#1.1: Basic cache"},{"slug":"jq3-multiple-keys","tester_log_prefix":"stage-1.2","title":"Stage \#1.2: Multiple keys"},{"slug":"jq3-update","tester_log_prefix":"stage-1.3","title":"Stage \#1.3: Key updates"},{"slug":"jq3-size","tester_log_prefix":"stage-1.4","title":"Stage \#1.4: SIZE command"}]
 STAGE2_BASIC = [{"slug":"ze6","tester_log_prefix":"stage-2","title":"Stage \#2: FIFO eviction"}]
 STAGE2_ALL = [{"slug":"ze6","tester_log_prefix":"stage-2.1","title":"Stage \#2.1: FIFO eviction"},{"slug":"ze6-update","tester_log_prefix":"stage-2.2","title":"Stage \#2.2: Update no reorder"},{"slug":"ze6-size","tester_log_prefix":"stage-2.3","title":"Stage \#2.3: SIZE with eviction"}]
 STAGE3_BASIC = [{"slug":"ch7","tester_log_prefix":"stage-3","title":"Stage \#3: LRU eviction"}]
