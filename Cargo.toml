@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tester-utils = { path = "../tester-utils-rs" }
+tester-utils = { git = "https://github.com/SystemQuest/tester-utils.git" }
 regex = "1.10"
 
 [[bin]]

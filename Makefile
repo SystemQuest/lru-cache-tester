@@ -27,8 +27,8 @@ STAGE7_BASIC = [{"slug":"st8","tester_log_prefix":"stage-7","title":"Stage \#7: 
 STAGE7_ALL = [{"slug":"st8","tester_log_prefix":"stage-7.1","title":"Stage \#7.1: Hit/miss tracking"},{"slug":"st8-empty","tester_log_prefix":"stage-7.2","title":"Stage \#7.2: Empty cache"},{"slug":"st8-hits-only","tester_log_prefix":"stage-7.3","title":"Stage \#7.3: All hits"},{"slug":"st8-misses-only","tester_log_prefix":"stage-7.4","title":"Stage \#7.4: All misses"},{"slug":"st8-eviction","tester_log_prefix":"stage-7.5","title":"Stage \#7.5: Eviction tracking"},{"slug":"st8-eviction-cycle","tester_log_prefix":"stage-7.6","title":"Stage \#7.6: Eviction cycle"},{"slug":"st8-expiration","tester_log_prefix":"stage-7.7","title":"Stage \#7.7: Expiration tracking"},{"slug":"st8-mixed","tester_log_prefix":"stage-7.8","title":"Stage \#7.8: Mixed tracking"},{"slug":"st8-precision","tester_log_prefix":"stage-7.9","title":"Stage \#7.9: Hit rate precision"},{"slug":"st8-large","tester_log_prefix":"stage-7.10","title":"Stage \#7.10: Large workload"},{"slug":"st8-concurrent","tester_log_prefix":"stage-7.11","title":"Stage \#7.11: Concurrent stats"}]
 
 .PHONY: build test clean release all help
-.PHONY: test_stage1 test_stage1_all test_stage2 test_stage2_all test_stage3 test_stage3_all test_stage4 test_stage4_all test_stage5 test_stage5_all test_stage6 test_stage6_all test_stage7 test_stage7_all test_starter test_manual
-.PHONY: test_solution_stage1 test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all test_solution_stage4 test_solution_stage4_all test_solution_stage5 test_solution_stage5_all test_solution_stage6 test_solution_stage6_all test_solution_stage7 test_solution_stage7_all
+.PHONY: test_starter test_error_message test_pass_all_error test_custom
+.PHONY: test_solution_stage1 test_solution_stage1_all test_solution_stage2 test_solution_stage2_all test_solution_stage3 test_solution_stage3_all test_solution_stage4 test_solution_stage4_all test_solution_stage5 test_solution_stage5_all test_solution_stage6 test_solution_stage6_all test_solution_stage7 test_solution_stage7_all
 
 # ==============================================================================
 # Build & Test
@@ -87,6 +87,14 @@ test_pass_all_error: build
 test_solution_stage1: build
 	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/01-jq3/code}; \
 	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE1_BASIC)'}; \
+	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
+	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
+	./dist/tester
+
+# Test solution-dev Stage 1 with all test cases
+test_solution_stage1_all: build
+	@REPO_DIR=$${SYSTEMQUEST_REPOSITORY_DIR:-$(SOLUTION_DEV_ROOT)/python/01-jq3/code}; \
+	TEST_CASES=$${SYSTEMQUEST_TEST_CASES_JSON:-'$(STAGE1_ALL)'}; \
 	SYSTEMQUEST_REPOSITORY_DIR=$$REPO_DIR \
 	SYSTEMQUEST_TEST_CASES_JSON=$$TEST_CASES \
 	./dist/tester
@@ -231,7 +239,8 @@ help:
 	@echo "  make test_pass_all_error    - Test pass_all placeholder error"
 	@echo ""
 	@echo "Solution Dev Testing (override with SYSTEMQUEST_REPOSITORY_DIR=/path):"
-	@echo "  make test_solution_stage1   - Test solution-dev Stage 1"
+	@echo "  make test_solution_stage1   - Test solution-dev Stage 1 basic"
+	@echo "  make test_solution_stage1_all - Test solution-dev Stage 1 all"
 	@echo "  make test_solution_stage2   - Test solution-dev Stage 2 basic"
 	@echo "  make test_solution_stage2_all - Test solution-dev Stage 2 all"
 	@echo "  make test_solution_stage3   - Test solution-dev Stage 3 basic"
